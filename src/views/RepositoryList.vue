@@ -1,73 +1,107 @@
 <template>
-    <div class="repository-list">
-      <h1 class="title">Chopstixd GitHub Repositories</h1>
-      <div class="repositories">
-        <div class="repository" v-for="repo in repositories" :key="repo.id">
-          <div class="repository-info">
-            <router-link :to="{ name: 'repoDetails', params: { id: repo.id, name: repo.name } }">
-              <h2 class="repository-name">{{ repo.name }}</h2>
-            </router-link>
-            <p class="repository-description">{{ repo.description }}</p>
-            <div class="repository-details">
-              <div class="repository-details-item">
-                <i class="fas fa-circle"></i>
-                <span class="repository-details-value">{{ repo.language }}</span>
-              </div>
-              <div class="repository-details-item">
-                <i class="fas fa-star"></i>
-                <span class="repository-details-value">{{ repo.stargazers_count }}</span>
-              </div>
-              <div class="repository-details-item">
-                <i class="fas fa-code-branch"></i>
-                <span class="repository-details-value">{{ repo.forks_count }}</span>
-              </div>
+  <Loader :loading="loading" />
+  <div class="repository-list">
+    <h1 class="title">Chopstixd GitHub Repositories</h1>
+    <div class="repositories">
+      <div class="repository" v-for="repo in repositories" :key="repo.id">
+        <div class="repository-info">
+          <router-link
+            :to="{
+              name: 'repoDetails',
+              params: { id: repo.id, name: repo.name },
+            }"
+          >
+            <h2 class="repository-name">{{ repo.name }}</h2>
+          </router-link>
+          <p class="repository-description">{{ repo.description }}</p>
+          <div class="repository-details">
+            <div class="repository-details-item">
+              <i class="fas fa-circle"></i>
+              <span class="repository-details-value">{{ repo.language }}</span>
+            </div>
+            <div class="repository-details-item">
+              <i class="fas fa-star"></i>
+              <span class="repository-details-value">{{
+                repo.stargazers_count
+              }}</span>
+            </div>
+            <div class="repository-details-item">
+              <i class="fas fa-code-branch"></i>
+              <span class="repository-details-value">{{
+                repo.forks_count
+              }}</span>
             </div>
           </div>
         </div>
       </div>
-      <div class="pagination">
-        <button class="pagination-button" v-if="page > 1" @click="loadRepositories(page - 1)">Previous</button>
-        <button class="pagination-button" v-if="hasMore" @click="loadRepositories(page + 1)">Next</button>
-      </div>
     </div>
-    
-  </template>
+    <div class="pagination">
+      <button
+        class="pagination-button"
+        v-if="page > 1"
+        @click="loadRepositories(page - 1)"
+      >
+        Previous
+      </button>
+      <button
+        class="pagination-button"
+        v-if="hasMore"
+        @click="loadRepositories(page + 1)"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</template>
 
 <script>
-import axios from 'axios';
-
+import axios from "axios";
+import Loader from "./Loader.vue";
 export default {
-  name: 'RepositoryList',
+  name: "RepositoryList",
   data() {
     return {
+      loading: true,
       repositories: [],
       page: 1,
       perPage: 3,
-      linkHeader: '',
-      hasMore: true
+      linkHeader: "",
+      hasMore: true,
     };
+  },
+  components: {
+    Loader,
   },
   methods: {
     loadRepositories(page) {
-        let username = "chopstixd"
-      axios.get(`https://api.github.com/users/${username}/repos?page=${page}&per_page=${this.perPage}`)
-        .then(response => {
+      this.loading = true;
+      let username = "chopstixd";
+      axios
+        .get(
+          `https://api.github.com/users/${username}/repos?page=${page}&per_page=${this.perPage}`
+        )
+        .then((response) => {
           this.repositories = response.data;
           this.page = page;
-          this.linkHeader = response.headers.link || '';
+          this.linkHeader = response.headers.link || "";
           this.hasMore = this.linkHeader.includes('rel="next"');
+          this.loading = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
+          this.loading = false;
         });
-    }
+    },
   },
   created() {
-    this.loadRepositories(this.page);
-  }
+    this.loading = true;
+     setTimeout(() => {
+       // Your code to be executed after 5 seconds
+      this.loadRepositories(this.page);
+     }, 3000);
+  },
 };
 </script>
-
 
 <style>
 .repository-list {
@@ -80,7 +114,7 @@ export default {
   font-size: 2rem;
   text-align: center;
   margin-bottom: 40px;
-  color:#27285C;
+  color: #27285c;
 }
 
 .repositories {
@@ -95,10 +129,10 @@ export default {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   overflow: hidden;
-  background-color:#27285C;
-  color:#fff;
-  border:4px solid;
-  border-color:#627BBF;
+  background-color: #27285c;
+  color: #fff;
+  border: 4px solid;
+  border-color: #627bbf;
 }
 
 .repository:hover {
@@ -146,7 +180,7 @@ export default {
 }
 
 .pagination-button {
-  background-color: #27285C;
+  background-color: #27285c;
   border: none;
   color: white;
   padding: 8px 16px;
@@ -161,7 +195,7 @@ export default {
 }
 
 .pagination-button:hover {
-  background-color: #82A3FF;
+  background-color: #82a3ff;
 }
 
 .pagination-button:active {
@@ -196,3 +230,4 @@ export default {
   }
 }
 </style>
+

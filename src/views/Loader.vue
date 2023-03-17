@@ -1,28 +1,34 @@
 <template>
-  <div>
-    <div class="lds-roller"><div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+  <div v-if="loading">
+    <div class="lds-roller">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
   </div>
+  
 </template>
 <script>
-export default{
-
+export default {
+  name: "Loading",
+  props: ["loading"],
 };
 </script>
 <style>
-
-lds-roller {
+.lds-roller {
   display: inline-block;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 80px;
   height: 80px;
+  z-index: 500;
 }
 .lds-roller div {
   animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
@@ -102,5 +108,4 @@ lds-roller {
     transform: rotate(360deg);
   }
 }
-
 </style>
